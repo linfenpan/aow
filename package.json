@@ -1,29 +1,36 @@
 {
-  "name": "project_m_md5",
-  "version": "0.0.1",
-  "description": "文件搜索，任务管理",
-  "main": "index.js",
-  "directories": {
-    "test": "项目管理"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "md5",
-    "auto",
-    "search"
-  ],
-  "author": "da宗熊",
-  "license": "MIT",
-  "dependencies": {
-    "clean-css": "^3.4.6",
-    "colors": "^1.1.2",
-    "commander": "^2.9.0",
-    "crypto-js": "^3.1.5",
-    "fs-extra": "^0.26.0",
-    "html-minifier": "^1.0.0",
-    "progress": "^1.1.8",
-    "uglify-js": "^2.5.0"
-  }
+	"name" : "aow",
+	"version" : "0.0.2",
+	"description" : "文件搜索，任务管理",
+	"main" : "index.js",
+	"directories" : {
+		"test" : "项目管理"
+	},
+	"repository" : {
+		"type" : "git",
+		"url" : "git@github.com:linfenpan/aow.git"
+	},
+	"bin" : {
+		"aow" : "bin/aow"
+	},
+	"scripts" : {
+		"test" : "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords" : [
+		"md5",
+		"auto",
+		"search"
+	],
+	"author" : "da宗熊",
+	"license" : "MIT",
+	"dependencies" : {
+		"clean-css" : "^3.4.6",
+		"colors" : "^1.1.2",
+		"commander" : "^2.9.0",
+		"crypto-js" : "^3.1.5",
+		"fs-extra" : "^0.26.0",
+		"html-minifier" : "^1.0.0",
+		"progress" : "^1.1.8",
+		"uglify-js" : "^2.5.0"
+	}
 }
