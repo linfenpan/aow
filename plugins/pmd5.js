@@ -1,66 +1,66 @@
 "use strict";
 var path = require("path");
 var fs = require("fs");
-module.exports = function(PM){
-    var md5 = require("crypto-js/md5");
-    function get_md5(str, len){
-        return md5(str).toString().substring(0, len || 8);
-    };
-    PM.setPlugins("pmd5", function(target, list, options){
-        /**
-            * options: {
-                length: 8,
-                fix: ["**"],
-                cwd: "./test/dest/",
-                inline: "__url"链接注入,
-                pm: {project.js的参数},
-                fixMap: {jsp: "html"} jsp 按 html 的模式修正
-            }
-            * files: ["*"]
-         */
-        options.fixMap = options.fixMap || {html: "html", htm: "html", css: "css", js: "js"};
-        options.inline = options.inline || "__url";
-        options.inline = new RegExp(`\\b${options.inline}\\(\\s*("|')(.*?)\\1\\s*\\)`, "gm");
+var md5 = require("crypto-js/md5");
+function get_md5(str, len){
+    return md5(str).toString().substring(0, len || 8);
+};
+exports.name = "pmd5";
+exports.plugin = function(target, list, options){
+    /**
+        * options: {
+            length: 8,
+            fix: ["**"],
+            cwd: "./test/dest/",
+            inline: "__url"链接注入,
+            pm: {project.js的参数},
+            fixMap: {jsp: "html"} jsp 按 html 的模式修正
+        }
+        * files: ["*"]
+     */
+    options.fixMap = options.fixMap || {html: "html", htm: "html", css: "css", js: "js"};
+    options.inline = options.inline || "__url";
+    options.inline = new RegExp(`\\b${options.inline}\\(\\s*("|')(.*?)\\1\\s*\\)`, "gm");
 
-        var map = {};
-        list.forEach(function(url){
-            var md5 = get_md5(fs.readFileSync(url).toString(), options.length);
-            var obj = path.parse(url);
-            obj.name += "_" + md5;
-            obj.base = obj.name + obj.ext;
-            var newUrl = path.format(obj);
+    var map = {};
+    list.forEach(function(url){
+        var md5 = get_md5(fs.readFileSync(url).toString(), options.length);
+        var obj = path.parse(url);
+        obj.name += "_" + md5;
+        obj.base = obj.name + obj.ext;
+        var newUrl = path.format(obj);
 
-            map[path.relative(options.cwd, url)] = path.relative(options.cwd, newUrl);
-            fs.renameSync(url, newUrl);
-        });
+        map[path.relative(options.cwd, url)] = path.relative(options.cwd, newUrl);
+        fs.renameSync(url, newUrl);
+    });
 
-        // 修正列表
-        var fixList = this.find(options.fix || "*", options.cwd, {matchLast: true});
-        fixList.forEach(function(file){
-            console.log(file)
-            var ext = path.extname(file).toLowerCase().slice(1);
-            // TODO 其它后缀，也需要修正?
-            ext = options.fixMap[ext] || ext;
-            // 脚本需要特殊修正
-            // 其它的，没区别
-            var fn;
-            switch(ext){
-                case "html":
-                    fn = function(){
-                        return fixHtml.apply(this, [].slice.call(arguments, 0).concat([options.pm || {}]));
-                    };
-                    break;
-                case "css":
-                    fn = fixCss;
-                    break;
-                case "js":
-                    fn = function(){
-                        return fixJs.apply(this, [].slice.call(arguments, 0).concat([options.pm || {}]));
-                    };
-                    break;
-            }
-            fn && checkNeedFix(file, options.cwd, map, fn, options);
-        });
+    // 修正列表
+    var fixList = this.find(options.fix || "*", options.cwd, {matchLast: true});
+
+    fixList.forEach(function(file){
+        console.log(file)
+        var ext = path.extname(file).toLowerCase().slice(1);
+        // TODO 其它后缀，也需要修正?
+        ext = options.fixMap[ext] || ext;
+        // 脚本需要特殊修正
+        // 其它的，没区别
+        var fn;
+        switch(ext){
+            case "html":
+                fn = function(){
+                    return fixHtml.apply(this, [].slice.call(arguments, 0).concat([options.pm || {}]));
+                };
+                break;
+            case "css":
+                fn = fixCss;
+                break;
+            case "js":
+                fn = function(){
+                    return fixJs.apply(this, [].slice.call(arguments, 0).concat([options.pm || {}]));
+                };
+                break;
+        }
+        fn && checkNeedFix(file, options.cwd, map, fn, options);
     });
 };
 
@@ -140,10 +140,12 @@ function fixJs(js, filePath, cwd, map, options){
                 if(url !== str){
                     need = true;
                 }
-                res.push(`"${str}", `);
+                res.push(`"${str}"`);
             }
         });
-        return "require" + (method || "") + "(" + res.join("");
+        // 修正最后的一个逗号的问题
+        arr.length > 1 && (res.push(""));
+        return "require" + (method || "") + "(" + res.join(", ");
     });
     return {need, text: js}
 };
