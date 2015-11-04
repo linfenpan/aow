@@ -1,6 +1,6 @@
 {
   "name": "project_m_md5",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "文件搜索，任务管理",
   "main": "index.js",
   "directories": {
