@@ -39,6 +39,7 @@
 
 2. 如果让外部可用，需要提供一套 fs 的操作
    方便资源更变时，map对象的更新
+``` javascript
 fs.move
 fs.copy
 fs.remove
@@ -50,6 +51,7 @@ fs.rename
 fs.read
 fs.write
 fs.append
+````
 
 3. 通过命令，可指定任务
 aow -t deploy
